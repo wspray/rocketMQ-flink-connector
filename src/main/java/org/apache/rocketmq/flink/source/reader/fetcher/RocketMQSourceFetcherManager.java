@@ -18,6 +18,7 @@
 
 package org.apache.rocketmq.flink.source.reader.fetcher;
 
+import org.apache.flink.configuration.Configuration;
 import org.apache.rocketmq.common.message.MessageQueue;
 import org.apache.rocketmq.flink.source.reader.OffsetCommitCallback;
 import org.apache.rocketmq.flink.source.reader.RocketMQPartitionSplitReader;
@@ -60,8 +61,9 @@ public class RocketMQSourceFetcherManager<T>
             FutureCompletingBlockingQueue<RecordsWithSplitIds<Tuple3<T, Long, Long>>> elementsQueue,
             Supplier<SplitReader<Tuple3<T, Long, Long>, RocketMQPartitionSplit>>
                     splitReaderSupplier,
+            Configuration configuration,
             Consumer<Collection<String>> splitFinishedHook) {
-        super(elementsQueue, splitReaderSupplier, splitFinishedHook);
+        super(elementsQueue, splitReaderSupplier, configuration, splitFinishedHook);
     }
 
     public void commitOffsets(

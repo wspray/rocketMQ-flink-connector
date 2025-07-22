@@ -176,12 +176,13 @@ public class RocketMQSource<OUT>
                                 commitOffsetAuto);
         RocketMQRecordEmitter<OUT> recordEmitter = new RocketMQRecordEmitter<>();
 
+        Configuration configuration = new Configuration();
         return new RocketMQSourceReader<>(
                 elementsQueue,
                 new RocketMQSourceFetcherManager<>(
-                        elementsQueue, splitReaderSupplier, (ignore) -> {}),
+                        elementsQueue, splitReaderSupplier, configuration, (ignore) -> {}),
                 recordEmitter,
-                new Configuration(),
+                configuration,
                 readerContext);
     }
 
