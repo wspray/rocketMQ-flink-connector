@@ -335,7 +335,7 @@ public class RocketMQSourceEnumerator
                     pendingPartitionSplitAssignment.remove(readerOwner);
                 });
         // Sends NoMoreSplitsEvent to the readers if there is no more partition splits
-        // to be assigned.Whether bounded or unbounded flow，the idle subtask will be released.
+        // to be assigned.Whether bounded or unbounded flow, the idle subtask will be released.
         if (noMoreNewPartitionSplits) {
             LOG.debug(
                     "No more RocketMQPartitionSplits to assign. Sending NoMoreSplitsEvent to the readers "

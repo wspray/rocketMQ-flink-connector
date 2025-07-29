@@ -18,13 +18,13 @@
 
 package org.apache.rocketmq.flink.source.reader.fetcher;
 
-import org.apache.flink.configuration.Configuration;
 import org.apache.rocketmq.common.message.MessageQueue;
 import org.apache.rocketmq.flink.source.reader.OffsetCommitCallback;
 import org.apache.rocketmq.flink.source.reader.RocketMQPartitionSplitReader;
 import org.apache.rocketmq.flink.source.split.RocketMQPartitionSplit;
 
 import org.apache.flink.api.java.tuple.Tuple3;
+import org.apache.flink.configuration.Configuration;
 import org.apache.flink.connector.base.source.reader.RecordsWithSplitIds;
 import org.apache.flink.connector.base.source.reader.SourceReaderBase;
 import org.apache.flink.connector.base.source.reader.fetcher.SingleThreadFetcherManager;

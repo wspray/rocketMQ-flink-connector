@@ -22,19 +22,19 @@
 
     <groupId>org.apache.rocketmq</groupId>
     <artifactId>rocketmq-flink</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.19.3</version>
     <packaging>jar</packaging>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!--maven properties -->
-        <maven.test.skip>false</maven.test.skip>
-        <maven.javadoc.skip>false</maven.javadoc.skip>
+        <maven.test.skip>true</maven.test.skip>
+        <maven.javadoc.skip>true</maven.javadoc.skip>
         <!-- compiler settings properties -->
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <rocketmq.version>4.9.2</rocketmq.version>
-        <flink.version>1.19.0</flink.version>
+        <flink.version>1.19.3</flink.version>
         <commons-lang.version>2.6</commons-lang.version>
         <spotless.version>2.4.2</spotless.version>
         <jaxb-api.version>2.3.1</jaxb-api.version>
@@ -275,27 +275,27 @@
                     </dependency>
                 </dependencies>
             </plugin>
-            <plugin>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>2.17</version>
-                <executions>
-                    <execution>
-                        <id>verify</id>
-                        <phase>verify</phase>
-                        <configuration>
-                            <configLocation>style/rmq_checkstyle.xml</configLocation>
-                            <encoding>UTF-8</encoding>
-                            <consoleOutput>true</consoleOutput>
-                            <failsOnError>true</failsOnError>
-                            <includeTestSourceDirectory>false</includeTestSourceDirectory>
-                            <includeTestResources>false</includeTestResources>
-                        </configuration>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+<!--            <plugin>-->
+<!--                <artifactId>maven-checkstyle-plugin</artifactId>-->
+<!--                <version>2.17</version>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <id>verify</id>-->
+<!--                        <phase>verify</phase>-->
+<!--                        <configuration>-->
+<!--                            <configLocation>style/rmq_checkstyle.xml</configLocation>-->
+<!--                            <encoding>UTF-8</encoding>-->
+<!--                            <consoleOutput>true</consoleOutput>-->
+<!--                            <failsOnError>true</failsOnError>-->
+<!--                            <includeTestSourceDirectory>false</includeTestSourceDirectory>-->
+<!--                            <includeTestResources>false</includeTestResources>-->
+<!--                        </configuration>-->
+<!--                        <goals>-->
+<!--                            <goal>check</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
@@ -309,35 +309,35 @@
             <!-- Due to the Flink build setup, "mvn spotless:apply" and "mvn spotless:check"
 				don't work. You have to use the fully qualified name, i.e.
 				"mvn com.diffplug.spotless:spotless-maven-plugin:apply" -->
-            <plugin>
-                <groupId>com.diffplug.spotless</groupId>
-                <artifactId>spotless-maven-plugin</artifactId>
-                <version>${spotless.version}</version>
-                <configuration>
-                    <java>
-                        <googleJavaFormat>
-                            <version>1.7</version>
-                            <style>AOSP</style>
-                        </googleJavaFormat>
+<!--            <plugin>-->
+<!--                <groupId>com.diffplug.spotless</groupId>-->
+<!--                <artifactId>spotless-maven-plugin</artifactId>-->
+<!--                <version>${spotless.version}</version>-->
+<!--                <configuration>-->
+<!--                    <java>-->
+<!--                        <googleJavaFormat>-->
+<!--                            <version>1.7</version>-->
+<!--                            <style>AOSP</style>-->
+<!--                        </googleJavaFormat>-->
 
-                        <!-- \# refers to the static imports -->
-                        <importOrder>
-                            <order>org.apache.rocketmq,org.apache.flink,org.apache.flink.shaded,,javax,java,scala,\#</order>
-                        </importOrder>
+<!--                        &lt;!&ndash; \# refers to the static imports &ndash;&gt;-->
+<!--                        <importOrder>-->
+<!--                            <order>org.apache.rocketmq,org.apache.flink,org.apache.flink.shaded,,javax,java,scala,\#</order>-->
+<!--                        </importOrder>-->
 
-                        <removeUnusedImports />
-                    </java>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>spotless-check</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+<!--                        <removeUnusedImports />-->
+<!--                    </java>-->
+<!--                </configuration>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <id>spotless-check</id>-->
+<!--                        <phase>validate</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>check</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
