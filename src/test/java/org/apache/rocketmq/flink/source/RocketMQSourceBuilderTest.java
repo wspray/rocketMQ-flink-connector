@@ -42,9 +42,9 @@ public class RocketMQSourceBuilderTest {
     public void open() {
         builder =
                 new RocketMQSourceBuilder<String>()
-                        .setNameServerAddress("10.130.16.166:9876")
-                        .setTopic("T1")
-                        .setConsumerGroup("G1")
+                        .setNameServerAddress("10.130.37.124:9876")
+                        .setTopic("bigdataApp-realNameSystem-topic")
+                        .setConsumerGroup("bigdataApp-realNameSystem-consumer")
                         .setDeserializer(
                                 new RocketMQValueOnlyDeserializationSchemaWrapper<>(
                                         new SimpleStringSchema()));
