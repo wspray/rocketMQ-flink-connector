@@ -173,7 +173,9 @@ public class RocketMQSource<OUT>
                                 sql,
                                 deserializationSchema,
                                 readerContext,
-                                commitOffsetAuto);
+                                commitOffsetAuto,
+                                startMode,
+                                consumerOffsetTimestamp);
         RocketMQRecordEmitter<OUT> recordEmitter = new RocketMQRecordEmitter<>();
 
         Configuration configuration = new Configuration();

@@ -18,6 +18,15 @@
 
 package org.apache.rocketmq.flink.source.reader;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.flink.api.connector.source.SourceReaderContext;
+import org.apache.flink.api.java.tuple.Tuple3;
+import org.apache.flink.connector.base.source.reader.RecordsWithSplitIds;
+import org.apache.flink.connector.base.source.reader.splitreader.SplitReader;
+import org.apache.flink.connector.base.source.reader.splitreader.SplitsAddition;
+import org.apache.flink.connector.base.source.reader.splitreader.SplitsChange;
+import org.apache.flink.util.Collector;
+import org.apache.flink.util.Preconditions;
 import org.apache.rocketmq.acl.common.AclClientRPCHook;
 import org.apache.rocketmq.acl.common.SessionCredentials;
 import org.apache.rocketmq.client.consumer.DefaultMQPullConsumer;
@@ -27,26 +36,15 @@ import org.apache.rocketmq.client.exception.MQBrokerException;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.common.message.MessageExt;
 import org.apache.rocketmq.common.message.MessageQueue;
+import org.apache.rocketmq.flink.legacy.common.config.StartupMode;
 import org.apache.rocketmq.flink.legacy.common.util.MetricUtils;
 import org.apache.rocketmq.flink.source.reader.deserializer.RocketMQDeserializationSchema;
 import org.apache.rocketmq.flink.source.split.RocketMQPartitionSplit;
 import org.apache.rocketmq.remoting.exception.RemotingException;
-
-import org.apache.flink.api.connector.source.SourceReaderContext;
-import org.apache.flink.api.java.tuple.Tuple3;
-import org.apache.flink.connector.base.source.reader.RecordsWithSplitIds;
-import org.apache.flink.connector.base.source.reader.splitreader.SplitReader;
-import org.apache.flink.connector.base.source.reader.splitreader.SplitsAddition;
-import org.apache.flink.connector.base.source.reader.splitreader.SplitsChange;
-import org.apache.flink.util.Collector;
-import org.apache.flink.util.Preconditions;
-
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
-
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
@@ -74,6 +72,8 @@ public class RocketMQPartitionSplitReader<T>
     private final String tag;
     private final String sql;
     private final boolean commitOffsetAuto;
+    private final StartupMode startMode;
+    private final long specificTimeStamp;
 
     private final RocketMQDeserializationSchema<T> deserializationSchema;
     private final Map<Tuple3<String, String, Integer>, Long> startingOffsets;
@@ -98,7 +98,9 @@ public class RocketMQPartitionSplitReader<T>
             String sql,
             RocketMQDeserializationSchema<T> deserializationSchema,
             SourceReaderContext readerContext,
-            boolean commitOffsetAuto) {
+            boolean commitOffsetAuto,
+            StartupMode startMode,
+            long specificTimeStamp) {
         this.topic = topic;
         this.tag = tag;
         this.sql = sql;
@@ -107,6 +109,8 @@ public class RocketMQPartitionSplitReader<T>
         this.stoppingTimestamps = new HashMap<>();
         this.collector = new SimpleCollector<>();
         this.commitOffsetAuto = commitOffsetAuto;
+        this.startMode = startMode;
+        this.specificTimeStamp = specificTimeStamp;
         initialRocketMQConsumer(consumerGroup, nameServerAddress, accessKey, secretKey);
         readerContext.metricGroup().gauge(MetricUtils.CURRENT_FETCH_EVENT_TIME_LAG, fetchDelay);
     }
@@ -169,9 +173,9 @@ public class RocketMQPartitionSplitReader<T>
                     }
                     fetchTime = System.currentTimeMillis();
                 } catch (MQClientException
-                        | RemotingException
-                        | MQBrokerException
-                        | InterruptedException e) {
+                         | RemotingException
+                         | MQBrokerException
+                         | InterruptedException e) {
                     LOG.warn(
                             String.format(
                                     "Pull RocketMQ messages of topic[%s] broker[%s] queue[%d] tag[%s] sql[%s] from offset[%d] exception.",
@@ -197,6 +201,11 @@ public class RocketMQPartitionSplitReader<T>
                     for (MessageExt messageExt : pullResult.getMsgFoundList()) {
                         long stoppingTimestamp = getStoppingTimestamp(topicPartition);
                         long storeTimestamp = messageExt.getStoreTimestamp();
+
+                        if (startMode == StartupMode.TIMESTAMP && storeTimestamp < specificTimeStamp) {
+                            continue;
+                        }
+
                         if (storeTimestamp > stoppingTimestamp) {
                             finishSplitAtRecord(
                                     topicPartition,
@@ -410,7 +419,8 @@ public class RocketMQPartitionSplitReader<T>
         }
 
         @Override
-        public void close() {}
+        public void close() {
+        }
 
         private List<T> getRecords() {
             return records;
